@@ -117,6 +117,31 @@ return {
           DOTNET_ENVIRONMENT = 'Development',
         },
       },
+      -- Debug azure function
+      {
+        type = 'coreclr',
+        name = 'Launch Azure Function',
+        request = 'launch',
+        preLaunchTask = function()
+          local function_name = vim.fn.input('Function Name to start: ', '', 'file')
+          return 'func start --functions ' .. function_name
+        end,
+        program = function()
+          -- Find the .dll file path similar to the previous configuration
+          local workspace_folders = vim.lsp.buf.list_workspace_folders()
+          local root_path = workspace_folders[1] or vim.fn.getcwd()
+          local project_name = vim.fn.fnamemodify(root_path, ':t')
+          return root_path .. '/' .. project_name .. '/bin/Debug/net8.0/' .. project_name .. '.dll'
+        end,
+        cwd = function()
+          local workspace_folders = vim.lsp.buf.list_workspace_folders()
+          return workspace_folders[1] or vim.fn.getcwd()
+        end,
+        env = {
+          DOTNET_ENVIRONMENT = 'Development',
+        },
+        console = 'integratedTerminal',
+      },
     }
 
     require('mason-nvim-dap').setup {
